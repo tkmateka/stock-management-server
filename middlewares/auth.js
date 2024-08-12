@@ -1,0 +1,23 @@
+require('dotenv').config();
+
+const jwt = require('jsonwebtoken');
+
+module.exports = {
+    authenticateToken: (req, res, next) => {
+        console.log(1111221, req.headers)
+
+        const authHeader = req.headers['authorization'];
+        console.log("Headr",authHeader)
+        // Store token from authheader string eg: "Bearer token...."
+        const token = authHeader && authHeader.split(' ')[1];
+
+        if (!token) return res.sendStatus(401);
+
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+            if (err) return res.sendStatus(403);
+
+            req.user = user;
+            next();
+        });
+    }
+}
