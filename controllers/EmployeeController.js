@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const bcrypt = require('bcrypt');
 const Employee = require('../models/Employee');
-const JoiEmployee = require('../joi-validation/JoiValidator');
+const JoiEmployee = require('../joi-validation/JoiEmployee');
 
 const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGODB_CONNECTION).catch((err) => console.log(err));

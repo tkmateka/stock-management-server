@@ -1,39 +1,40 @@
 const express = require('express');
 const router = express.Router();
 
-const authControllers = require('../controllers/AuthController');
+const authController = require('../controllers/AuthController');
 const authMiddleware = require('../middlewares/auth');
 const uploadMiddleware = require('../middlewares/upload');
-const uploadControllers = require('../controllers/UploadController');
-const employeeControllers = require('../controllers/EmployeeController');
+const uploadController = require('../controllers/UploadController');
+const employeeController = require('../controllers/EmployeeController');
+const vehicleController = require('../controllers/VehicleController');
 
 // Auth Routes
-router.post('/api/login', authControllers.login);
-router.get('/api/should_update_password/:email', authControllers.should_update_password);
-router.post('/api/refresh_token', authControllers.refresh_token);
-router.post('/api/forgot_password', authControllers.forgot_password);
-router.post('/api/verify_code', authControllers.verify_code);
-router.post('/api/change_password', authControllers.change_password);
-router.delete('/api/logout', authControllers.logout);
+router.post('/api/login', authController.login);
+router.get('/api/should_update_password/:email', authController.should_update_password);
+router.post('/api/refresh_token', authController.refresh_token);
+router.post('/api/forgot_password', authController.forgot_password);
+router.post('/api/verify_code', authController.verify_code);
+router.post('/api/change_password', authController.change_password);
+router.delete('/api/logout', authController.logout);
 
 // Admin User Info
-router.get('/api/user_info', authMiddleware.authenticateToken, authControllers.user_info);
+router.get('/api/user_info', authMiddleware.authenticateToken, authController.user_info);
 
 // Defaults
-router.post('/api/register', employeeControllers.add_employee);
-router.get('/api/get_default_employee_by_email/:email', employeeControllers.get_employee_by_email);
+router.post('/api/register', employeeController.add_employee);
+router.get('/api/get_default_employee_by_email/:email', employeeController.get_employee_by_email);
 
-router.post('/api/add_employee', authMiddleware.authenticateToken, employeeControllers.add_employee);
-router.get('/api/get_employees', authMiddleware.authenticateToken, employeeControllers.get_employees);
-router.get('/api/get_employee_by_email/:email', authMiddleware.authenticateToken, employeeControllers.get_employee_by_email);
-router.post('/api/update_employee_documents', authMiddleware.authenticateToken, employeeControllers.update_employee_documents);
+// Vehicle
+router.post('/api/add_vehicle', authMiddleware.authenticateToken, vehicleController.add_vehicle);
+router.get('/api/get_vehicles', authMiddleware.authenticateToken, vehicleController.get_vehicles);
+router.get('/api/get_vehicle_by_id/:id', authMiddleware.authenticateToken, vehicleController.get_vehicle_by_id);
 
 // File Upload Routes
-router.post('/api/upload', uploadMiddleware.upload.single('file'), uploadControllers.upload_file);
-router.get('/api/files', uploadControllers.get_files);
-router.get('/api/file/:filename', uploadControllers.get_file_by_filename);
-router.get('/api/image/:filename', uploadControllers.get_image_by_filename);
-router.get('/api/get_any_file_by_filename/:filename', uploadControllers.get_any_file_by_filename);
-router.delete('/api/file/:id', uploadControllers.delete_file_by_id);
+router.post('/api/upload', uploadMiddleware.upload.single('file'), uploadController.upload_file);
+router.get('/api/files', uploadController.get_files);
+router.get('/api/file/:filename', uploadController.get_file_by_filename);
+router.get('/api/image/:filename', uploadController.get_image_by_filename);
+router.get('/api/get_any_file_by_filename/:filename', uploadController.get_any_file_by_filename);
+router.delete('/api/file/:id', uploadController.delete_file_by_id);
 
 module.exports = router;

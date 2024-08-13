@@ -23,12 +23,15 @@ conn.once('open', () => {
 const storage = new GridFsStorage({
     url: process.env.MONGODB_CONNECTION,
     file: (req, file) => {
+        console.log(file);
+
         return new Promise((resolve, reject) => {
             crypto.randomBytes(16, (err, buf) => {
                 if (err) {
                     return reject(err);
                 }
                 const filename = buf.toString('hex') + path.extname(file.originalname);
+        console.log(filename);
                 const fileInfo = {
                     filename: filename,
                     bucketName: 'uploads'

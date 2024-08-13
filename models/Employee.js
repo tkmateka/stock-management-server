@@ -4,8 +4,8 @@ const Employee = new mongoose.Schema({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true, lowercase: true, index: { unique: true } },
-    password: { type: String, required: false },
-    role: { type: String, required: false },
+    password: { type: String, required: true },
+    role: { type: String, required: true },
     dateCreated: { type: Date, required: true, default: () => Date.now(), immutable: true },
     dateUpdated: { type: Date, required: false },
 });
