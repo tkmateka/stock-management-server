@@ -36,45 +36,6 @@ module.exports = {
     get_file_by_filename: async (req, res) => {
         try {
             let file = await gfs.files.findOne({ filename: req.params.filename });
-            // Check if file exists
-            if (!file || file.length === 0) {
-                return res.status(404).json({
-                    message: "No file found..."
-                })
-            }
-            // If file exist
-            return res.json(file);
-        } catch (error) {
-            res.status(400).json({ err });
-        }
-    },
-    get_image_by_filename: async (req, res) => {
-        try {
-            let file = await gfs.files.findOne({ filename: req.params.filename });
-
-            // Check if file exists
-            if (!file || file.length === 0) {
-                return res.status(404).json({
-                    message: "No file found..."
-                })
-            }
-            // If this is an image
-            if (file.contentType.includes('image')) {
-                // Read output to browser
-                const stream = gridfsBucket.openDownloadStream(file._id);
-                stream.pipe(res);
-            } else {
-                return res.status(404).json({
-                    message: "Not an image..."
-                })
-            }
-        } catch (error) {
-            res.status(400).json({ error });
-        }
-    },
-    get_any_file_by_filename: async (req, res) => {
-        try {
-            let file = await gfs.files.findOne({ filename: req.params.filename });
 
             // Check if file exists
             if (!file || file.length === 0) {
@@ -90,15 +51,19 @@ module.exports = {
         }
     },
     delete_file_by_id: async (req, res) => {
-        gridfsBucket.delete(ObjectId(req.params.id), (err, gridStore) => {
-            if (err) {
-                console.log(err)
-                return res.status(404).json({
-                    message: err
-                });
-            }
+        try {
+            const objectId = new ObjectId(req.params.id);
 
-            res.status(200).send({ message: "File deleted successfully" });
-        });
+            let response = await gridfsBucket.delete(objectId);
+            res.status(200).send({
+                message: "File deleted successfully",
+                response
+            });
+        } catch (error) {
+            console.error(error); // Use console.error for logging errors
+            return res.status(404).json({
+                message: error.message || 'An error occurred'
+            });
+        }
     }
 }

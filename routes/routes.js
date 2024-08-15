@@ -33,8 +33,6 @@ router.get('/api/get_vehicle_by_id/:id', authMiddleware.authenticateToken, vehic
 router.post('/api/upload', uploadMiddleware.upload, uploadController.upload_file);
 router.get('/api/files', uploadController.get_files);
 router.get('/api/file/:filename', uploadController.get_file_by_filename);
-router.get('/api/image/:filename', uploadController.get_image_by_filename);
-router.get('/api/get_any_file_by_filename/:filename', uploadController.get_any_file_by_filename);
 router.delete('/api/file/:id', uploadController.delete_file_by_id);
 
 module.exports = router;
