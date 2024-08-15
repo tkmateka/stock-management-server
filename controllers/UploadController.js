@@ -1,73 +1,104 @@
 require('dotenv').config();
+
+const Grid = require('gridfs-stream');
+
 const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
-const { GridFSBucket } = require('mongodb');
+const conn = mongoose.createConnection(process.env.MONGODB_CONNECTION);
 
-const mongoURI = process.env.MONGODB_CONNECTION;
-const conn = mongoose.createConnection(mongoURI);
+// Init gfs
+let gfs, gridfsBucket;
 
-let gridfsBucket;
 conn.once('open', () => {
-  gridfsBucket = new GridFSBucket(conn.db, { bucketName: 'uploads' });
+    // Initialize Stream
+    gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db, {
+        bucketName: 'uploads'
+    });
+    gfs = Grid(conn.db, mongoose.mongo);
+    // all set!
+    gfs.collection('uploads');
 });
 
 module.exports = {
-  upload_file: (req, res) => {
-    res.json({ file: req.file });
-  },
+    upload_file: async (req, res) => {
+        res.json({ file: req.file });
+    },
+    get_files: async (req, res) => {
+        try {
+            let files = await gfs.files.find().toArray();
 
-  get_files: (req, res) => {
-    gridfsBucket.find().toArray((err, files) => {
-      if (!files || files.length === 0) {
-        return res.status(404).json({ message: "No files found..." });
-      }
-      return res.json(files);
-    });
-  },
+            // If files exist
+            return res.json(files);
+        } catch (error) {
+            res.status(400).json({ err });
+        }
+    },
+    get_file_by_filename: async (req, res) => {
+        try {
+            let file = await gfs.files.findOne({ filename: req.params.filename });
+            // Check if file exists
+            if (!file || file.length === 0) {
+                return res.status(404).json({
+                    message: "No file found..."
+                })
+            }
+            // If file exist
+            return res.json(file);
+        } catch (error) {
+            res.status(400).json({ err });
+        }
+    },
+    get_image_by_filename: async (req, res) => {
+        try {
+            let file = await gfs.files.findOne({ filename: req.params.filename });
 
-  get_file_by_filename: (req, res) => {
-    gridfsBucket.find({ filename: req.params.filename }).toArray((err, files) => {
-      if (!files || files.length === 0) {
-        return res.status(404).json({ message: "No file found..." });
-      }
-      return res.json(files[0]);
-    });
-  },
+            // Check if file exists
+            if (!file || file.length === 0) {
+                return res.status(404).json({
+                    message: "No file found..."
+                })
+            }
+            // If this is an image
+            if (file.contentType.includes('image')) {
+                // Read output to browser
+                const stream = gridfsBucket.openDownloadStream(file._id);
+                stream.pipe(res);
+            } else {
+                return res.status(404).json({
+                    message: "Not an image..."
+                })
+            }
+        } catch (error) {
+            res.status(400).json({ error });
+        }
+    },
+    get_any_file_by_filename: async (req, res) => {
+        try {
+            let file = await gfs.files.findOne({ filename: req.params.filename });
 
-  get_image_by_filename: (req, res) => {
-    gridfsBucket.find({ filename: req.params.filename }).toArray((err, files) => {
-      if (!files || files.length === 0) {
-        return res.status(404).json({ message: "No file found..." });
-      }
+            // Check if file exists
+            if (!file || file.length === 0) {
+                return res.status(404).json({
+                    message: "No file found..."
+                })
+            }
+            // Read output to browser
+            const stream = gridfsBucket.openDownloadStream(file._id);
+            stream.pipe(res);
+        } catch (error) {
+            res.status(400).json({ err });
+        }
+    },
+    delete_file_by_id: async (req, res) => {
+        gridfsBucket.delete(ObjectId(req.params.id), (err, gridStore) => {
+            if (err) {
+                console.log(err)
+                return res.status(404).json({
+                    message: err
+                });
+            }
 
-      const file = files[0];
-      if (file.contentType.includes('image')) {
-        const downloadStream = gridfsBucket.openDownloadStream(file._id);
-        downloadStream.pipe(res);
-      } else {
-        return res.status(404).json({ message: "Not an image..." });
-      }
-    });
-  },
-
-  get_any_file_by_filename: (req, res) => {
-    gridfsBucket.find({ filename: req.params.filename }).toArray((err, files) => {
-      if (!files || files.length === 0) {
-        return res.status(404).json({ message: "No file found..." });
-      }
-      const file = files[0];
-      const downloadStream = gridfsBucket.openDownloadStream(file._id);
-      downloadStream.pipe(res);
-    });
-  },
-
-  delete_file_by_id: (req, res) => {
-    gridfsBucket.delete(ObjectId(req.params.id), (err) => {
-      if (err) {
-        console.log(err);
-        return res.status(404).json({ message: err });
-      }
-      res.status(200).send({ message: "File deleted successfully" });
-    });
-  }
-};
+            res.status(200).send({ message: "File deleted successfully" });
+        });
+    }
+}
