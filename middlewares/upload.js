@@ -1,46 +1,48 @@
 require('dotenv').config();
 
-const path = require('path');
-const crypto = require('crypto');
 const multer = require('multer');
-const { GridFsStorage } = require('multer-gridfs-storage');
-const Grid = require('gridfs-stream');
+const { MongoClient, GridFSBucket } = require('mongodb');
+const crypto = require('crypto');
+const path = require('path');
 
-const mongoose = require('mongoose');
-const conn = mongoose.createConnection(process.env.MONGODB_CONNECTION);
+const mongoURI = process.env.MONGODB_CONNECTION;
 
-// Init gfs
-let gfs;
+let gridfsBucket;
+let db;
 
-conn.once('open', () => {
-    // Initialize Stream
-    gfs = Grid(conn.db, mongoose.mongo);
-    // all set!
-    gfs.collection('uploads');
-});
+MongoClient.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(client => {
+    db = client.db();
+    gridfsBucket = new GridFSBucket(db, { bucketName: 'uploads' });
+  })
+  .catch(err => console.error('Failed to connect to MongoDB', err));
 
-// Create a Storage engine
-const storage = new GridFsStorage({
-    url: process.env.MONGODB_CONNECTION,
-    file: (req, file) => {
-        console.log(file);
+const storage = multer.memoryStorage();
 
-        return new Promise((resolve, reject) => {
-            crypto.randomBytes(16, (err, buf) => {
-                if (err) {
-                    return reject(err);
-                }
-                const filename = buf.toString('hex') + path.extname(file.originalname);
-        console.log(filename);
-                const fileInfo = {
-                    filename: filename,
-                    bucketName: 'uploads'
-                };
-                resolve(fileInfo);
-            });
-        });
-    }
-});
+const handleFile = (req, file, cb) => {
+  if (!gridfsBucket) return cb(new Error('GridFSBucket not initialized'), null);
+
+  crypto.randomBytes(16, (err, buf) => {
+    if (err) return cb(err);
+
+    const filename = buf.toString('hex') + path.extname(file.originalname);
+    const uploadStream = gridfsBucket.openUploadStream(filename);
+
+    uploadStream.once('finish', () => {
+      cb(null, { filename: filename, id: uploadStream.id });
+    });
+
+    uploadStream.once('error', (err) => {
+      cb(err, null);
+    });
+
+    const readableStream = file.stream;
+    readableStream.pipe(uploadStream);
+  });
+};
+
+const uploadMiddleware = multer({ storage, fileFilter: (req, file, cb) => cb(null, true) });
+
 module.exports = {
-    upload: multer({ storage })
-}
+  upload: uploadMiddleware
+};
