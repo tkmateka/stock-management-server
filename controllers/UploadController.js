@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const { GridFSBucket } = require('mongodb');
 
 const mongoURI = process.env.MONGODB_CONNECTION;
-const conn = mongoose.createConnection(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+const conn = mongoose.createConnection(mongoURI);
 
 let gridfsBucket;
 conn.once('open', () => {

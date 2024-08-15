@@ -30,7 +30,7 @@ router.get('/api/get_vehicles', authMiddleware.authenticateToken, vehicleControl
 router.get('/api/get_vehicle_by_id/:id', authMiddleware.authenticateToken, vehicleController.get_vehicle_by_id);
 
 // File Upload Routes
-router.post('/api/upload', uploadMiddleware.upload.single('file'), uploadController.upload_file);
+router.post('/api/upload', uploadMiddleware.upload, uploadController.upload_file);
 router.get('/api/files', uploadController.get_files);
 router.get('/api/file/:filename', uploadController.get_file_by_filename);
 router.get('/api/image/:filename', uploadController.get_image_by_filename);
