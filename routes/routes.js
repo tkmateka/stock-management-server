@@ -26,8 +26,10 @@ router.get('/api/get_default_employee_by_email/:email', employeeController.get_e
 
 // Vehicle
 router.post('/api/add_vehicle', authMiddleware.authenticateToken, vehicleController.add_vehicle);
+router.put('/api/update_vehicle', authMiddleware.authenticateToken, vehicleController.update_vehicle);
 router.get('/api/get_vehicles', authMiddleware.authenticateToken, vehicleController.get_vehicles);
 router.get('/api/get_vehicle_by_id/:id', authMiddleware.authenticateToken, vehicleController.get_vehicle_by_id);
+router.delete('/api/delete_vehicle_by_id/:id', authMiddleware.authenticateToken, vehicleController.delete_vehicle_by_id);
 
 // File Upload Routes
 router.post('/api/upload', uploadMiddleware.upload, uploadController.upload_file);

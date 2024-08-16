@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const { ObjectId } = require('mongodb');
 const Vehicle = require('../models/Vehicle');
 const JoiVehicle = require('../joi-validation/JoiVehicle');
 
@@ -22,7 +23,9 @@ module.exports = {
             const newVehicle = new Vehicle({ ...vehicle });
             const result = await newVehicle.save();
 
-            res.status(201).send(result);
+            res.status(201).send({
+                message: `${result.make} added successfully!`
+            });
         } catch (e) {
             res.status(500).send(e);
         }
@@ -34,5 +37,27 @@ module.exports = {
     get_vehicle_by_id: async (req, res) => {
         const vehicle = await Vehicle.find({ id: req.params.id });
         res.json(vehicle);
+    },
+    update_vehicle: async (req, res) => {
+        const filter = { vin: req.body.vin };
+        const update = req.body;
+
+        const vehicle = await Vehicle.findOneAndUpdate(filter, update);
+
+        res.json(vehicle);
+    },
+    delete_vehicle_by_id: async (req, res) => {
+        try {
+            const vehicleId = req.params.id;
+            const result = await Vehicle.findByIdAndDelete(vehicleId);
+
+            if (!result) {
+                return res.status(404).json({ message: 'Vehicle not found' });
+            }
+
+            res.status(200).json({ message: 'Vehicle deleted successfully' });
+        } catch (error) {
+            res.status(500).json({ message: 'Error deleting Vehicle', error });
+        }
     }
 }

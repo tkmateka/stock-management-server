@@ -17,7 +17,7 @@ const Vehicle = new mongoose.Schema({
     modelYear: { type: Number, required: true },
     millage: { type: Number, required: true },
     colour: { type: String, required: true },
-    vin: { type: String, required: true },
+    vin: { type: String, required: true, uppercase: true, index: { unique: true } },
     retailPrice: { type: Number, required: true },
     costPrice: { type: Number, required: true },
     accessories: [Accessory],

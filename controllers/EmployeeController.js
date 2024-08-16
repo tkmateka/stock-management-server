@@ -40,9 +40,9 @@ module.exports = {
         const employee = await Employee.find({ email: req.params.email });
         res.json(employee);
     },
-    update_employee_documents: async (req, res) => {
+    update_employee: async (req, res) => {
         const filter = { email: req.body.email };
-        const update = { documents: req.body.documents };
+        const update = { documents: req.body };
 
         const employee = await Employee.findOneAndUpdate(filter, update);
         res.json(employee);

@@ -32,14 +32,12 @@ const generateTokenObject = (user) => {
 
 // Middleware to Authenticate token
 const generateAccessToken = (user) => {
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '2m' }); // 1hr
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10m' }); // 1hr
 };
 
 module.exports = {
     login: async (req, res) => {
         const user = await Employee.find({ email: req.body.email });
-
-        console.log('user', user)
 
         if (!user[0]) return res.status(400).send('User not found');
 
