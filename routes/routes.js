@@ -27,7 +27,7 @@ router.post('/api/add_vehicle', authMiddleware.authenticateToken, vehicleControl
 router.put('/api/update_vehicle', authMiddleware.authenticateToken, vehicleController.update_vehicle);
 router.post('/api/search_vehicles', authMiddleware.authenticateToken, vehicleController.search_vehicles);
 router.get('/api/get_dashboard_data', authMiddleware.authenticateToken, vehicleController.get_dashboard_data);
-router.get('/api/get_vehicles', authMiddleware.authenticateToken, vehicleController.get_vehicles);
+router.post('/api/get_vehicles', authMiddleware.authenticateToken, vehicleController.get_vehicles);
 router.get('/api/get_vehicle_by_id/:id', authMiddleware.authenticateToken, vehicleController.get_vehicle_by_id);
 router.delete('/api/delete_vehicle_by_id/:id', authMiddleware.authenticateToken, vehicleController.delete_vehicle_by_id);
 

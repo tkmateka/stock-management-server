@@ -63,7 +63,7 @@ module.exports = {
                 ],
                 ...filterCriteria,
             });
-            
+
             res.json({ vehicles, total });
         } catch (error) {
             console.error('Error fetching vehicles:', error);
@@ -71,8 +71,22 @@ module.exports = {
         }
     },
     get_vehicles: async (req, res) => {
-        const vehicles = await Vehicle.find();
-        res.json(vehicles);
+        const { page = 1, limit = 10, sort = 'dateCreated', order = 'asc' } = req.body;
+        const sortOrder = order === 'asc' ? 1 : -1;
+
+        try {
+            const vehicles = await Vehicle.find()
+                .sort({ [sort]: sortOrder })
+                .skip((page - 1) * limit)
+                .limit(parseInt(limit));
+
+            const total = await Vehicle.countDocuments();
+            
+            res.json({ vehicles, total });
+        } catch (error) {
+            console.error('Error fetching vehicles:', error);
+            res.status(500).json({ message: 'Server Error', error });
+        }
     },
     get_vehicle_by_id: async (req, res) => {
         const vehicle = await Vehicle.find({ id: req.params.id });
