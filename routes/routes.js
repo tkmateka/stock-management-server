@@ -8,6 +8,11 @@ const uploadController = require('../controllers/UploadController');
 const employeeController = require('../controllers/EmployeeController');
 const vehicleController = require('../controllers/VehicleController');
 
+
+// User
+router.post('/api/register', employeeController.add_employee);
+router.get('/api/get_default_employee_by_email/:email', employeeController.get_employee_by_email);
+
 // Auth Routes
 router.post('/api/login', authController.login);
 router.get('/api/should_update_password/:email', authController.should_update_password);
@@ -17,16 +22,11 @@ router.post('/api/verify_code', authController.verify_code);
 router.post('/api/change_password', authController.change_password);
 router.delete('/api/logout', authController.logout);
 
-// Admin User Info
-router.get('/api/user_info', authMiddleware.authenticateToken, authController.user_info);
-
-// Defaults
-router.post('/api/register', employeeController.add_employee);
-router.get('/api/get_default_employee_by_email/:email', employeeController.get_employee_by_email);
-
 // Vehicle
 router.post('/api/add_vehicle', authMiddleware.authenticateToken, vehicleController.add_vehicle);
 router.put('/api/update_vehicle', authMiddleware.authenticateToken, vehicleController.update_vehicle);
+router.post('/api/search_vehicles', authMiddleware.authenticateToken, vehicleController.search_vehicles);
+router.get('/api/get_dashboard_data', authMiddleware.authenticateToken, vehicleController.get_dashboard_data);
 router.get('/api/get_vehicles', authMiddleware.authenticateToken, vehicleController.get_vehicles);
 router.get('/api/get_vehicle_by_id/:id', authMiddleware.authenticateToken, vehicleController.get_vehicle_by_id);
 router.delete('/api/delete_vehicle_by_id/:id', authMiddleware.authenticateToken, vehicleController.delete_vehicle_by_id);

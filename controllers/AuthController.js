@@ -25,14 +25,13 @@ const generateTokenObject = (user) => {
     return {
         firstName: user.firstName,
         lastName: user.lastName,
-        email: user.email,
-        role: user.role
+        email: user.email
     }
 }
 
 // Middleware to Authenticate token
 const generateAccessToken = (user) => {
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10m' }); // 1hr
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1m' }); // 1hr
 };
 
 module.exports = {
@@ -55,7 +54,7 @@ module.exports = {
                     });
                     storeRefreshToken(newToken);
 
-                    res.send({ accessToken: accessToken, refreshToken: refreshToken });
+                    res.send({ accessToken: accessToken, refreshToken: refreshToken, message: 'Logged in successfully' });
                 } else {
                     res.send({ error: 'Incorrect Password' });
                 }
@@ -146,10 +145,5 @@ module.exports = {
         });
 
         res.status(200).send({ message: "success" });
-    },
-    user_info: async (req, res) => {
-        let reqUser = JSON.parse(req.query.query);
-        const user = await Employee.findOne({ email: reqUser.email });
-        res.json(user);
     }
 }

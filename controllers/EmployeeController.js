@@ -27,7 +27,7 @@ module.exports = {
             const newEmployee = new Employee({ ...emp });
             const result = await newEmployee.save();
 
-            res.status(201).send(result);
+            res.status(201).send({ message: 'Registered successfully'});
         } catch (e) {
             res.status(500).send(e);
         }
@@ -42,7 +42,6 @@ module.exports = {
     },
     update_employee: async (req, res) => {
         const filter = { email: req.body.email };
-        const update = { documents: req.body };
 
         const employee = await Employee.findOneAndUpdate(filter, update);
         res.json(employee);
