@@ -7,7 +7,7 @@ const Accessory = new mongoose.Schema({
 
 const Image = new mongoose.Schema({
     name: { type: String, required: false },
-    path: { type: String, required: false },
+    path: { type: String, required: false }
 })
 
 const Vehicle = new mongoose.Schema({

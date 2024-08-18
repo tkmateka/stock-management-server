@@ -3,6 +3,7 @@ require('dotenv').config();
 const moment = require('moment');  // Import moment.js for date manipulation
 const Vehicle = require('../models/Vehicle');
 const JoiVehicle = require('../joi-validation/JoiVehicle');
+const UploadController = require('../controllers/UploadController');
 
 const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGODB_CONNECTION).catch((err) => console.log(err));
@@ -15,6 +16,10 @@ module.exports = {
         if (error) {
             // Send a 400 response if validation fails
             return res.status(400).json({ error: error.details[0].message });
+        }
+
+        if (req.body.images && req.body.images.length > 3) {
+            return res.status(400).json({ error: 'You can only upload up to 3 images.' });
         }
 
         try {

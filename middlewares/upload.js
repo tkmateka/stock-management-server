@@ -46,12 +46,18 @@ const gridFsStorage = {
     }
 };
 
+// Create multer instance
 const upload = multer({
     storage: gridFsStorage,
     fileFilter: (req, file, cb) => {
-        cb(null, true);
+        // Check if the file is an image
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true); // Accept the file
+        } else {
+            cb(new Error('Only image files are allowed!'), false); // Reject the file
+        }
     }
-}).single('file');
+}).array('files'); // 'files' is the field name that will contain the files
 
 module.exports = {
     upload

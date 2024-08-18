@@ -21,7 +21,7 @@ conn.once('open', () => {
 
 module.exports = {
     upload_file: async (req, res) => {
-        res.json({ file: req.file });
+        res.json({ file: req.files });
     },
     get_files: async (req, res) => {
         try {

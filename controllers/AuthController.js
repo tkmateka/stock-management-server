@@ -63,25 +63,6 @@ module.exports = {
             res.status(500).send(e);
         }
     },
-    should_update_password: async (req, res) => {
-        const user = await Employee.find({ email: req.params.email });
-
-        if (!user[0]) return res.status(400).send('User not found');
-
-        // Check if user needs to update password
-        try {
-            // Use Bcrypt compare the found User password with the incoming Request User password
-            bcrypt.compare("1234", user[0].password).then(doesMatch => {
-                if (doesMatch) {
-                    res.send('update password');
-                } else {
-                    res.send("continue");
-                }
-            });
-        } catch (e) {
-            res.status(500).send(e);
-        }
-    },
     refresh_token: async (req, res) => {
         const refreshToken = req.body.token;
 
@@ -112,6 +93,7 @@ module.exports = {
         try {
             verification_code = crypto.randomBytes(10).toString('hex');
             let body = {
+                verification_code,
                 to: user[0].email, // list of receivers
                 subject: "Verification Code", // Subject line
                 text: `Your Verification code: ${verification_code}`, // plain text body

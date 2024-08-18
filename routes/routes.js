@@ -15,7 +15,6 @@ router.get('/api/get_default_employee_by_email/:email', employeeController.get_e
 
 // Auth Routes
 router.post('/api/login', authController.login);
-router.get('/api/should_update_password/:email', authController.should_update_password);
 router.post('/api/refresh_token', authController.refresh_token);
 router.post('/api/forgot_password', authController.forgot_password);
 router.post('/api/verify_code', authController.verify_code);

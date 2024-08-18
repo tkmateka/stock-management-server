@@ -5,12 +5,14 @@ const nodemailer = require("nodemailer");
 module.exports = {
     send_email: async (req, res) => {
         try {
+            const code = req.body.verification_code;
+            delete req.body.verification_code;
             // create reusable transporter object using the default SMTP transport
             let transporter = nodemailer.createTransport({
                 service: "gmail",
                 auth: {
                     user: process.env.APP_MAIL,
-                    pass: "gkmqueymcaahqomi"
+                    pass: process.env.APP_PASS
                 }
             });
 
@@ -51,6 +53,7 @@ module.exports = {
                     </html>
                 `, // html body
             });
+            res.status(200).send({ message: "Verification sent success" });
         } catch (err) {
             console.log(err);
         }
