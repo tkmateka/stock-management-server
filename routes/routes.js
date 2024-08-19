@@ -11,7 +11,9 @@ const vehicleController = require('../controllers/VehicleController');
 
 // User
 router.post('/api/register', employeeController.add_employee);
+router.get('/api/get_employees', employeeController.get_employees);
 router.get('/api/get_default_employee_by_email/:email', employeeController.get_employee_by_email);
+router.put('/api/update_employee', employeeController.update_employee);
 
 // Auth Routes
 router.post('/api/login', authController.login);

@@ -31,7 +31,7 @@ const generateTokenObject = (user) => {
 
 // Middleware to Authenticate token
 const generateAccessToken = (user) => {
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1m' }); // 1hr
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1hr' }); // 1hr, 1m
 };
 
 module.exports = {

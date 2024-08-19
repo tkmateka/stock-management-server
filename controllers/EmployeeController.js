@@ -43,6 +43,8 @@ module.exports = {
     update_employee: async (req, res) => {
         const filter = { email: req.body.email };
 
+        const update = req.body;
+
         const employee = await Employee.findOneAndUpdate(filter, update);
         res.json(employee);
     }
